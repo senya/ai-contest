@@ -1,0 +1,100 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+#box {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+#up {
+    background: #eee;
+    padding: 5px;
+    flex: 0 1 auto;
+}
+
+form {
+    padding: 3px;
+}
+
+.battle-item {
+    border: 1px solid black;
+    padding: 3px;
+    margin: 2px;
+    display: grid;
+    /*border-radius: 3px;*/
+}
+
+.battle-item.system {
+    border: 2px solid green;
+}
+
+.battle-item .name {
+    font-weight: bold;
+}
+
+.battle-item .version {
+    vertical-align: super;
+    font-size: smaller;
+}
+
+#body {
+    flex: 1 1 auto;
+    display: flex;
+}
+
+#body>div {
+    vertical-align: top;
+    overflow: auto;
+}
+
+#pleer-cont {
+    border: 3px dashed gray;
+    margin: 2px;
+}
+
+#pleer-control {
+    padding: 2px;
+}
+
+#pleer-buttons {
+    float: left;
+}
+
+#pleer-inp-sp {
+    display: block;
+    overflow: hidden;
+}
+
+#pleer-control input {
+    width: 100%;
+    box-sizing:border-box;
+}
+
+#up form {
+    display: inline-block;
+}
+
+table {
+    border-collapse: collapse;
+    /*border-radius: 3px;*/
+    padding: 3px;
+    margin: 2px;
+}
+
+tr:nth-child(odd) {
+    background: #e5e5e5;
+}
+
+td, th {
+    border: 1px solid black;
+    padding: 0 5px;
+}
+

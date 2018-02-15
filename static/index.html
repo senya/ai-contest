@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link rel="stylesheet" href="css/main.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.4.4/pixi.min.js"></script>
+<script src="js/jquery-1.9.1.min.js"></script>  
+<script src="js/jsrender.min.js"></script>
+<script src="js/baasbox.js"></script>
+
+<script src="js/pleer.js"></script>
+<script src="js/main.js"></script>
+
+<script id="battle-template" type="text/x-jsrender">
+<div class="battle-item{{if system}} system{{/if}}">
+    <span>
+    <div>
+        1.
+        <span class="name">{{:user1}}</span>
+        <span class="version">{{:version1}}</span>
+        :<span class="points">{{:points1}}</span> points
+    </div>
+    <div>
+        2.
+        <span class="name">{{:user2}}</span>
+        <span class="version">{{:version2}}</span>
+        :<span class="points">{{:points2}}</span> points
+    </div>
+    </span>
+    <button onclick="battleClick('{{:record_id}}')">смотреть</button>
+</div>
+</script>
+<script id="result-template" type="text/x-jsrender">
+<tr><td>{{:#index}}</td><td>{{:name}}</td><td>{{:mean.toFixed(2)}}</td></tr>
+</script>
+
+<script id="battle-request-template" type="text/x-jsrender">
+<div>
+{{:user1}}{{:version1}} vs {{:user2}}{{:version2}}: ... loading ...
+</div>
+</script>
+
+<div id="box">
+<div id="up">
+<div id="up_logged" style="display:none">
+    <span id="user_name"></span>
+    <button id="logout_btn">logout</button>
+    <form id="upload_form">
+        Загрузить файл со стратегией:
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="submit" value="Отправить" name="submit">
+    </form><br>
+    <form id="battle_form">
+        Создать бой (выберите двух пользователей и версии их стратегий):
+        <select name="user1" id="user1"><option disabled selected>user 1</option></select>
+        <select name="version1" id="version1"></select>
+        <select name="user2" id="user2"><option disabled selected>user 2</option></select>
+        <select name="version2" id="version2"></select>
+        <input type="submit" value="Cоздать" name="submit">
+    </form>
+    Показывать бои:<select id="battles-select">
+        <option selected value="with-me">со мной</option>
+        <option value="all">все</option>
+    </select>
+</div>
+<div id="up_login" style="display:none">
+    login: <input id="login">
+    password: <input id="password">
+    <button id="login_btn">login</button>
+    <button id="signup_btn">signup</button>
+</div>
+</div>
+<div id="body">
+    <div>
+    <div id="pleer-cont">
+        <div id="pleer"></div>
+        <div id="pleer-control">
+            <span id="pleer-buttons"><button id="pleer-toggle">play/pause</button></span>
+            <span id="pleer-inp-sp"><input type="range" id="pleer-pos" value="0"></span>
+        </div>
+    </div>
+    </div>
+    <div id="battles">
+        Бои
+        <div id="battles-list">
+        </div>
+    </div>
+    <div>
+        Рейтинг
+        <table>
+            <thead>
+                <tr><th>№</th><th>имя</th><th>~</th></tr>
+            </thead>
+            <tbody id="results">
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
