@@ -15,11 +15,15 @@ function Pleer(width, height) {
                             if (this.running) {
                                 if (this.cur_frame < this.frames.length - 1) {
                                     this.cur_frame += 1;
+                                } else {
+                                    this.running = false;
                                 }
                                 that = this;
                                 ms = 60  - this.app.ticker.elapsedMS;
                                 if (ms <= 0) {
-                                    that.app.ticker.update();
+                                    setTimeout(function() {
+                                        that.app.ticker.update();
+                                    }, 0);
                                 } else {
                                     setTimeout(function() {
                                         that.app.ticker.update();
@@ -53,6 +57,12 @@ function Pleer(width, height) {
     }
 
     this.setFrame = function(frame) {
+        if ('error' in frame) {
+            this.text[0].text = '';
+            this.text[1].text = frame['error'];
+            return;
+        }
+
         if (this.tanks.length != frame.tanks.length) {
             if (frame.tanks.length == 1) {
                 deleted = 1 - frame.tanks[0].ind;

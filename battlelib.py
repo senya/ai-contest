@@ -5,6 +5,7 @@ import copy
 import math
 import importlib.machinery
 import random
+import traceback
 
 
 import game
@@ -15,12 +16,26 @@ def battle(pl1, pl1_file, pl2, pl2_file, n):
     pl2_points = 0
     random.seed()
 
-    player1 = importlib.machinery.SourceFileLoader('player1',pl1_file).load_module()
-    player2 = importlib.machinery.SourceFileLoader('player2',pl2_file).load_module()
-
     tanks = [{"health": game.MAX_HEALTH, "timeout": 0, "ind":0, "pos": [25, 25], "name": pl1}, {"health": game.MAX_HEALTH, "timeout": 0, "ind":1, "pos": [775, 575], "name": pl2}]
     bullets = []
     bonuses = []
+
+
+    try:
+        player1 = importlib.machinery.SourceFileLoader('player1',pl1_file).load_module()
+    except:
+        return 0, 2, [{'error': "syntax error in " + tanks[0]['name'] + ' code\n' + traceback.format_exc()}]
+
+    try:
+        player2 = importlib.machinery.SourceFileLoader('player2',pl2_file).load_module()
+    except:
+        return 2, 0, [{'error': "syntax error in " + tanks[1]['name'] + ' code\n' + traceback.format_exc()}]
+
+    if not hasattr(player1, 'move'):
+        return 0, 2, [{'error': tanks[0]['name'] + ': move function not found'}]
+
+    if not hasattr(player2, 'move'):
+        return 2, 0, [{'error': tanks[1]['name'] + ': move function not found'}]
 
     moves = [player1.move, player2.move]
 
@@ -37,7 +52,12 @@ def battle(pl1, pl1_file, pl2, pl2_file, n):
             t = tanks[j]
             p = t['pos']
             m = Move()
-            moves[j](tn[j], tn[:j] + tn[j+1:], bu, bo, m)
+            try:
+                moves[j](tn[j], tn[:j] + tn[j+1:], bu, bo, m)
+            except:
+                ret = [2, 2, [{'error': tanks[j]['name'] + ': crashed:\n' + traceback.format_exc()}]]
+                ret[i] = 0
+                return ret
 
             if t['timeout'] > 0:
                 t['timeout'] -= 1
