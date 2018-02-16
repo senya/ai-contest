@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="js/jquery-1.9.1.min.js"></script>  
+<script src="js/baasbox.js"></script>
+
+<style>
+
+#up_login {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 2px;
+    border: 1px dashed gray;
+}
+
+#up_login>div {
+    text-align: right;
+    margin: 2px;
+}
+
+input {
+    border: 1px solid gray;
+}
+
+</style>
+
+<script type="text/javascript" charset="utf-8">
+
+function logged(username) {
+    console.log("logged ", username);
+    $('#user_name').html('Hi ' + username);
+    $('#up_login').hide();
+    $('#up_logged').show();
+}
+
+$(document).ready(function() {
+    BaasBox.setEndPoint('http://localhost:9000');
+    BaasBox.appcode = '1234567890';
+
+    function done(res) {
+        window.location.replace('/');
+    }
+    function fail(err) {
+        console.log('error ', err);
+        if (err.status != 401) {
+            $('#wrong').text('Произошла ошибка');
+        }
+        $('#wrong').show();
+    }
+
+    BaasBox.fetchCurrentUser().done(done)
+    .fail(function(error) {
+        $('#login_btn').click(function() {
+            BaasBox.login($('#login').val(), $('#password').val())
+                .done(done).fail(fail);
+        });
+        $('#signup_btn').click(function() {
+            BaasBox.signup($('#login').val(), $('#password').val())
+                .done(done).fail(fail);
+        });
+    });
+});
+</script>
+
+<div id="up_login">
+    <div id="wrong" style="display:none">Неверный логин или пароль. Попробуйте еще раз</div>
+    <div><label>login:</label><input id="login"></div>
+    <div><label>password:</label><input id="password"></div>
+    <div>
+        <button id="login_btn">login</button>
+        <button id="signup_btn">signup</button>
+    </div>
+</div>

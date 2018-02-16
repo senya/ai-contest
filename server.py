@@ -18,6 +18,10 @@ app = Flask(__name__)
 def hello():
     return app.send_static_file('index.html')
 
+@app.route("/login")
+def login():
+    return app.send_static_file('login.html')
+
 @app.route("/player")
 def player():
     return app.send_static_file('svg.htm')
