@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import os
 import operator
 import battlelib
 import bb
@@ -21,6 +22,8 @@ def battle(user1, version1, user2, version2, system):
     load_strategy(user1, version1, 'user1.py')
     load_strategy(user2, version2, 'user2.py')
     p1_p, p2_p, json = battlelib.battle(user1, 'user1.py', user2, 'user2.py', 5000)
+    os.remove('user1.py')
+    os.remove('user2.py')
 
     if p1_p < p2_p:
         user1, user2 = user2, user1
