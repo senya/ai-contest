@@ -4,13 +4,6 @@ var pleer = false;
 BaasBox.setEndPoint('http://localhost:9000');
 BaasBox.appcode = '1234567890';
 
-BaasBox.fetchCurrentUser()
-    .done(function(res) { logged(res.data.user.name); })
-    .fail(function(error) {
-        window.location.replace('/login');
-        console.log("error1 ", error);
-        $('#up_login').show()
-    })
 
 function battleClick(id) {
     BaasBox.fetchFile(id).done(function(res) {
@@ -96,6 +89,17 @@ function logged(username) {
 
 $(document).ready(function() {
     pleer = new Pleer(800, 600);
+
+    BaasBox.fetchCurrentUser()
+        .done(function(res) {
+            $('#box').css('visibility', 'visible');
+            logged(res.data.user.name);
+        })
+        .fail(function(error) {
+            window.location.replace('/login');
+            console.log("error1 ", error);
+            $('#up_login').show()
+        });
 
     $('#login_btn').click(function() {
         BaasBox.login($('#login').val(), $('#password').val())

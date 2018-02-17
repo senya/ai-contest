@@ -9,6 +9,7 @@ html, body {
 }
 
 #box {
+    visibility: hidden; /* trick to not show before check logged in, as we may redirect to login */
     display: flex;
     flex-flow: column;
     height: 100%;
