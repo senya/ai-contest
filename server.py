@@ -4,6 +4,8 @@ import dateutil
 from collections import defaultdict
 
 from flask import Flask, request, send_from_directory, jsonify
+from celery import Celery
+
 
 import battle
 
@@ -13,6 +15,14 @@ b = bb.BaasBox('http://localhost:9000', '__robot', '123', '1234567890')
 
 
 app = Flask(__name__)
+print(app.name)
+
+broker_uri = 'amqp://guest@localhost'
+celery = Celery(app.name, broker=broker_uri)
+
+@celery.task(bind=True)
+def do_battle(self, user1, version1, user2, version2, system):
+    battle.battle(user1, version1, user2, version2, system)
 
 @app.route("/")
 def hello():
@@ -38,7 +48,9 @@ def send_css(path):
 def contest():
     f = request.form
     #return str(request.form['user1'])
-    return battle.battle(f['user1'], int(f['version1']), f['user2'], int(f['version2']), False)
+    #return battle.battle(f['user1'], int(f['version1']), f['user2'], int(f['version2']), False)
+    do_battle.delay(f['user1'], int(f['version1']), f['user2'], int(f['version2']), False)
+    return 'ok'
 
 @app.route('/get_versions', methods=['POST', 'GET'])
 def get_versions():

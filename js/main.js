@@ -147,6 +147,7 @@ $(document).ready(function() {
         $.post('battle', $(this).serialize(), function(data) {
             console.log(data);
         });
+        alert('Запрос на бой отправлен. Подождите, он скоро появится в списке боев. И не надо еще раз нажимать на кнопку.');
     });
     $("#pleer-toggle").click(function() { pleer.toggle() });
     $('#pleer-pos').change(function() { pleer.jump(parseInt($(this).val())); });
