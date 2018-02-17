@@ -20,28 +20,35 @@ function battleClick(id) {
     });
 }
 
+var prev_select = 'nothing';
+var prev_top = 'nothing';
 function battlesSelect() {
-    console.log($(this).val())
-    switch ($(this).val()) {
-        case 'with-me':
-            where = "body.user1='" + USERNAME + "' or body.user2='" + USERNAME + "'";
-            console.log(where);
-            BaasBox.loadCollectionWithParams("battles", {'where': where}).done(function(res) {
-                var html = $.templates('#battle-template').render(res.map(function(x){return x.body}));
-                $('#battles-list').html(html);
-            }).fail(function(error) {
-                console.log("error ", error);
-            });
-            break;
-        case 'all':
-            BaasBox.loadCollection("battles") .done(function(res) {
-                var html = $.templates('#battle-template').render(res.map(function(x){return x.body}));
-                $('#battles-list').html(html);
-            }).fail(function(error) {
-                console.log("error ", error);
-            });
-            break;
+    var $sel = $('#battles-select');
+    var params = {'recordsPerPage': 100, 'page':0, 'orderBy': '_creation_date desc'}
+
+    if ($sel.val() == 'with-me') {
+        params['where'] = "body.user1='" + USERNAME + "' or body.user2='" + USERNAME + "'";
     }
+
+    BaasBox.loadCollectionWithParams("battles", params) .done(function(res) {
+        if (prev_select == $sel.val() && prev_top == res[0].id) {
+            return;
+        }
+
+        console.log('redraw battle list');
+        prev_select = $sel.val();
+        prev_top = res[0].id;
+
+        var html = $.templates('#battle-template').render(res.map(function(x){
+            d = new Date(x._creation_date);
+            r = x.body;
+            r.date = d.toLocaleString('ru', {month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})
+            return r;
+        }));
+        $('#battles-list').html(html);
+    }).fail(function(error) {
+        console.log("error ", error);
+    });
 }
 
 function logged(username) {
@@ -83,6 +90,8 @@ function logged(username) {
             }
         }
     });
+
+    setInterval(battlesSelect, 5000);
 }
 
 $(document).ready(function() {
