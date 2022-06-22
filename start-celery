@@ -1,0 +1,4 @@
+#!/bin/bash
+
+celery -A server.celery purge
+celery worker -A server.celery --loglevel=info
