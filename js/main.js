@@ -1,7 +1,10 @@
 var USERNAME = "";
 var pleer = false;
 
-BaasBox.setEndPoint('http://localhost:9000');
+var cur_show_all = false;
+
+BaasBox.setEndPoint('http://ai-contest.vdi.mipt.ru/baasbox');
+//BaasBox.setEndPoint('http://localhost:9000');
 BaasBox.appcode = '1234567890';
 
 
@@ -15,22 +18,23 @@ function battleClick(id) {
 
 var prev_select = 'nothing';
 var prev_top = 'nothing';
-function battlesSelect() {
+function battlesSelect(user1, user2) {
     var $sel = $('#battles-select');
     var params = {'recordsPerPage': 100, 'page':0, 'orderBy': '_creation_date desc'}
 
-    if ($sel.val() == 'with-me') {
-        params['where'] = "body.user1='" + USERNAME + "' or body.user2='" + USERNAME + "'";
-    }
+    params['where'] = "body.user1='" + user1 + "' and body.user2='" + user2 + "' or ";
+    params['where'] += "body.user1='" + user2 + "' and body.user2='" + user1 + "'";
 
     BaasBox.loadCollectionWithParams("battles", params) .done(function(res) {
-        if (prev_select == $sel.val() && prev_top == res[0].id) {
+        if (prev_select == $sel.val() && res.length > 0 &&  prev_top == res[0].id) {
             return;
         }
 
         console.log('redraw battle list');
         prev_select = $sel.val();
-        prev_top = res[0].id;
+	if (res.length > 0) {
+        	prev_top = res[0].id;
+	}
 
         var html = $.templates('#battle-template').render(res.map(function(x){
             d = new Date(x._creation_date);
@@ -39,18 +43,24 @@ function battlesSelect() {
             return r;
         }));
         $('#battles-list').html(html);
+
+        /*
+    $.post('get_results', function(data) {
+        var html = $.templates('#result-template').render(data);
+        $('#results').html(html);
+        for (i in data) {
+            if (data[i].name == USERNAME) {
+                $('#user_name').html(USERNAME + ' [№' + i + ' ~' + data[i].mean.toFixed(2) + ']');
+            }
+        }
+    });
+    */
     }).fail(function(error) {
         console.log("error ", error);
     });
 }
 
-function logged(username) {
-    USERNAME = username;
-    console.log("logged ", username);
-    $('#user_name').html('Hi ' + username);
-    $('#up_login').hide();
-    $('#up_logged').show();
-
+function getVersions() {
     $.post('get_versions', function(data) {
         console.log('x', data);
         var html = Object.keys(data).map(function(name) { return '<option>' + name + '</option>' }).join()
@@ -65,14 +75,40 @@ function logged(username) {
             $('#version2').html(html).val(ver.toString());
         });
     });
-    BaasBox.fetchFilesDetails().done(function(res) {
-        console.log(res);
-    }).fail(function(err) {
-        console.log('error ', err);
+}
+
+function getResults(show_all) {
+    var x;
+    if (show_all) {
+        x = 'true';
+    } else {
+        x = 'false';
+    }
+    $.post('get_results2', {'show_all': x}, function(data) {
+        console.log('x', data);
+        var head = $.templates('#result-templateh').render(data.slice(0, 1));
+        var tab = $.templates('#result-template2').render(data.slice(1));
+        $('#results').html(head + tab);
+        //for (i in data) {
+        //    if (data[i].name == username) {
+        //        $('#user_name').html(username + ' [№' + i + ' , wins: ' + data[i].wins + ']');
+        //    }
+        //}
     });
+}
+
+function logged(username) {
+    USERNAME = username;
+    console.log("logged ", username);
+    $('#user_name').html('Hi ' + username);
+    $('#up_login').hide();
+    $('#up_logged').show();
+
+    getVersions();
 
     $('#battles-select').change();
 
+    /*
     $.post('get_results', function(data) {
         console.log('x', data);
         var html = $.templates('#result-template').render(data);
@@ -83,8 +119,10 @@ function logged(username) {
             }
         }
     });
+    */
 
-    setInterval(battlesSelect, 5000);
+    getResults(false);
+    //setInterval(battlesSelect, 5000);
 }
 
 $(document).ready(function() {
@@ -132,10 +170,20 @@ $(document).ready(function() {
         e.preventDefault();
         var formObj = $(this);
         var formData = new FormData(this);
+        $('#loading').text('... loading ...');
+        $('#upload_form>input').prop('disabled', true);
         BaasBox.uploadFile(formData).done(function(res) {
             console.log("res ", JSON.parse(res));
-            console.log(JSON.parse(res).data.id)
+            console.log(JSON.parse(res).data.id);
+            $('#upload_form>input').prop('disabled', false);
+            $('#loading').text('... done, 2min timeout for next upload ...');
+            setTimeout(function() {
+                $('#upload_form>input').prop('disabled', false);
+            }, 120000);
+            getVersions();
         }).fail(function(error) {
+            $('#loading').text('... error ...');
+            $('#upload_form>input').prop('disabled', false);
             console.log("error ", error);
         })
     });
@@ -144,14 +192,35 @@ $(document).ready(function() {
         var formObj = $(this);
         var formData = new FormData(this);
         console.log($(this).serialize());
+        $('#battle_form>input').prop('disabled', true);
         $.post('battle', $(this).serialize(), function(data) {
             console.log(data);
         });
+        setTimeout(function() {
+            $('#battle_form>input').prop('disabled', false);
+        }, 300000);
+        alert('timeout 5min to create next battle');
         alert('Запрос на бой отправлен. Подождите, он скоро появится в списке боев. И не надо еще раз нажимать на кнопку.');
+    });
+    $("#battles-form").submit(function(e) {
+        e.preventDefault();
+        console.log($(this).serialize());
+        battlesSelect($('#user1').val(), $('#user2').val())
     });
     $("#pleer-toggle").click(function() { pleer.toggle() });
     $('#pleer-pos').change(function() { pleer.jump(parseInt($(this).val())); });
     $('#pleer-pos').mousedown(function() { pleer.freeze(); });
     $('#pleer-pos').mouseup(function() { pleer.unfreeze(); });
     $('#battles-select').change(battlesSelect);
+    $('#btn-switch').click(function() {
+        $('#btn-switch').prop('disabled', true);
+        cur_show_all = !cur_show_all;
+        getResults(cur_show_all);
+        if (cur_show_all) {
+            $('#btn-switch').text('не показывать участников вне конкурса');
+        } else {
+            $('#btn-switch').text('показать участников вне конкруса');
+        }
+        $('#btn-switch').prop('disabled', false);
+    })
 });

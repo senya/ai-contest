@@ -34,6 +34,22 @@
 <script id="result-template" type="text/x-jsrender">
 <tr><td>{{:#index}}</td><td>{{:name}}</td><td>{{:mean.toFixed(2)}}</td></tr>
 </script>
+<script id="result-templateh" type="text/x-jsrender">
+<tr>
+<th></th>
+{{for}}
+<th class="rotate"><div><span>{{:#data}}</span></div></th>
+{{/for}}
+</tr>
+</script>
+<script id="result-template2" type="text/x-jsrender">
+<tr>
+<td>{{:#index}}</td>
+{{for}}
+<td>{{:#data}}</td>
+{{/for}}
+</tr>
+</script>
 
 <script id="battle-request-template" type="text/x-jsrender">
 <div>
@@ -41,15 +57,18 @@
 </div>
 </script>
 
+
 <div id="box">
 <div id="up">
 <div id="up_logged" style="display:none">
     <span id="user_name"></span>
     <button id="logout_btn">logout</button>
+    <!--
     <form id="upload_form">
         Загрузить файл со стратегией:
         <input type="file" name="fileToUpload" id="fileToUpload">
         <input type="submit" value="Отправить" name="submit">
+        <span id="loading"></span>
     </form><br>
     <form id="battle_form">
         Создать бой (выберите двух пользователей и версии их стратегий):
@@ -63,6 +82,13 @@
         <option selected value="with-me">со мной</option>
         <option value="all">все</option>
     </select>
+    -->
+    Показывать бои:<form id="battles-form">
+        <select name="user1" id="user1"><option disabled selected>user 1</option></select>
+        <select name="user2" id="user2"><option disabled selected>user 2</option></select>
+        <input type="submit" value="показать" name="submit">
+    </form>
+    <button id="btn-switch">показать участников вне конкруса</button>
 </div>
 <div id="up_login" style="display:none">
     login: <input id="login">
@@ -89,9 +115,6 @@
     <div>
         Рейтинг
         <table>
-            <thead>
-                <tr><th>№</th><th>имя</th><th>~</th></tr>
-            </thead>
             <tbody id="results">
             </tbody>
         </table>

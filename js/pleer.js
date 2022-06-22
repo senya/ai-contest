@@ -32,6 +32,7 @@ function Pleer(width, height) {
                             }
                         }, this);
     this.bullets = [];
+    this.bonuses = [];
     this.tanks = [];
     this.text = [];
     this.text_frame = new PIXI.Text('', {fill: 0xFFFFFF});
@@ -67,6 +68,9 @@ function Pleer(width, height) {
             if (frame.tanks.length == 1) {
                 deleted = 1 - frame.tanks[0].ind;
                 this.text[deleted].text = this.tanks[deleted].name + ' destroyed';
+            } else if (frame.tanks.length == 0) {
+                this.text[0].text = this.tanks[0].name + ' destroyed';
+                this.text[1].text = this.tanks[1].name + ' destroyed';
             } else {
                 throw "tanks arrays of different lengths";
             }
@@ -100,6 +104,25 @@ function Pleer(width, height) {
             this.bullets[i].y = frame.bullets[i].pos[1];
         }
 
+        if (this.bonuses.length < frame.bonuses.length) {
+            for (var i = this.bonuses.length; i < frame.bonuses.length; i++) {
+                var gr = new PIXI.Graphics();
+                gr.beginFill(0x22ee22);
+                gr.drawCircle(0, 0, 5);
+                gr.endFill();
+                this.bonuses.push(gr);
+                this.app.stage.addChild(gr);
+            }
+        } else if (this.bonuses.length > frame.bonuses.length) {
+            for (var i = frame.bonuses.length; i < this.bonuses.length; i++) {
+                this.app.stage.removeChild(this.bonuses[i]);
+            }
+            this.bonuses.splice(frame.bonuses.length, this.bonuses.length - frame.bonuses.length);
+        }
+        for (var i = 0; i < frame.bonuses.length; i++) {
+            this.bonuses[i].x = frame.bonuses[i].pos[0];
+            this.bonuses[i].y = frame.bonuses[i].pos[1];
+        }
     }
 
     this.play = function(frames) {
@@ -125,12 +148,15 @@ function Pleer(width, height) {
             }
             //this.app.ticker.start();
             this.running = true;
+            this.app.ticker.update();
         }
     }
 
     this.jump = function(ind) {
         this.cur_frame = ind;
-        this.app.ticker.update();
+        if (!this.running) {
+            this.app.ticker.update();
+        }
     }
 
     this.freeze = function() {

@@ -18,8 +18,7 @@ def battle(pl1, pl1_file, pl2, pl2_file, n):
 
     tanks = [{"health": game.MAX_HEALTH, "timeout": 0, "ind":0, "pos": [25, 25], "name": pl1}, {"health": game.MAX_HEALTH, "timeout": 0, "ind":1, "pos": [775, 575], "name": pl2}]
     bullets = []
-    bonuses = []
-
+    bonuses = [] 
 
     try:
         player1 = importlib.machinery.SourceFileLoader('player1',pl1_file).load_module()
@@ -56,7 +55,7 @@ def battle(pl1, pl1_file, pl2, pl2_file, n):
                 moves[j](tn[j], tn[:j] + tn[j+1:], bu, bo, m)
             except:
                 ret = [2, 2, [{'error': tanks[j]['name'] + ': crashed:\n' + traceback.format_exc()}]]
-                ret[i] = 0
+                ret[j] = 0
                 return ret
 
             if t['timeout'] > 0:
@@ -76,8 +75,9 @@ def battle(pl1, pl1_file, pl2, pl2_file, n):
                 t['timeout'] = game.SHOT_TIMEOUT
 
             l = math.sqrt(m.x ** 2 + m.y ** 2)
-            p[0] += m.x / l * game.TANK_SPEED
-            p[1] += m.y / l * game.TANK_SPEED
+            if l > 0:
+                p[0] += m.x / l * game.TANK_SPEED
+                p[1] += m.y / l * game.TANK_SPEED
             if p[0] < game.TANK_RADIUS:
                 p[0] = game.TANK_RADIUS
             if p[1] < game.TANK_RADIUS:

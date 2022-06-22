@@ -35,7 +35,8 @@ function logged(username) {
 }
 
 $(document).ready(function() {
-    BaasBox.setEndPoint('http://localhost:9000');
+    BaasBox.setEndPoint('http://ai-contest.vdi.mipt.ru/baasbox');
+    //BaasBox.setEndPoint('http://localhost:9000');
     BaasBox.appcode = '1234567890';
 
     function done(res) {
@@ -56,8 +57,12 @@ $(document).ready(function() {
                 .done(done).fail(fail);
         });
         $('#signup_btn').click(function() {
-            BaasBox.signup($('#login').val(), $('#password').val())
-                .done(done).fail(fail);
+	    if ($('#login').val().match(/^[a-zA-Z_0-9]+$/)) {
+                BaasBox.signup($('#login').val(), $('#password').val())
+                    .done(done).fail(fail);
+            } else {
+                alert('incorrect login');
+            }
         });
     });
 });
@@ -68,7 +73,7 @@ $(document).ready(function() {
     <div><label>login:</label><input id="login"></div>
     <div><label>password:</label><input id="password"></div>
     <div>
-        <button id="login_btn">login</button>
         <button id="signup_btn">signup</button>
+        <button id="login_btn">login</button>
     </div>
 </div>

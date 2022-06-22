@@ -16,7 +16,6 @@ html, body {
 }
 
 #up {
-    background: #eee;
     padding: 5px;
     flex: 0 1 auto;
 }
@@ -49,16 +48,19 @@ form {
 #body {
     flex: 1 1 auto;
     display: flex;
+    width: fit-content;
 }
 
 #body>div {
     vertical-align: top;
     overflow: auto;
+    flex-shrink: 0;
 }
 
 #pleer-cont {
     border: 3px dashed gray;
     margin: 2px;
+    width: 800px;
 }
 
 #pleer-control {
@@ -88,14 +90,35 @@ table {
     /*border-radius: 3px;*/
     padding: 3px;
     margin: 2px;
+    margin-top: 50px;
+    margin-right: 200px;
 }
 
-tr:nth-child(odd) {
+tr:nth-child(even) {
     background: #e5e5e5;
 }
 
-td, th {
+td {
     border: 1px solid black;
     padding: 0 5px;
 }
 
+th.rotate {
+  /* Something you can count on */
+  height: 140px;
+  white-space: nowrap;
+  padding: 0 5px;
+}
+
+th.rotate > div {
+  transform: 
+    /* Magic Numbers */
+    translate(25px, 51px)
+    /* 45 is really 360 - 45 */
+    rotate(315deg);
+  width: 30px;
+}
+th.rotate > div > span {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
+}
