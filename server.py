@@ -6,6 +6,9 @@ from collections import defaultdict
 from flask import Flask, request, send_from_directory, jsonify
 from celery import Celery
 
+
+# For this to work you should have pwddd.py file with content like
+# pwd = '12345'
 import pwddd
 
 import battle

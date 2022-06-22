@@ -8,6 +8,9 @@ import bb
 import random
 import operator
 import itertools
+
+# For this to work you should have pwddd.py file with content like
+# pwd = '12345'
 import pwddd
 
 b = bb.BaasBox('http://localhost:9000', '__robot', pwddd.pwd, '1234567890')
